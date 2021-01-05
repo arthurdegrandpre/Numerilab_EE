@@ -69,7 +69,7 @@ Naviguer sur la carte jusqu’au Parc National de la Mauricie. Il est aussi poss
 
 
 ```javascript
-var geometry = /* color: #d63000 */ee.Geometry.Point([-72.94,-48.78]);
+var pnm = /* color: #d63000 */ee.Geometry.Point([-72.97, 46.74])
 ```
 
 **N’oubliez pas d’enregistrer votre code à l’aide du bouton enregistrer**
@@ -97,11 +97,11 @@ Pour importer une couche, vous devrez la charger à partir de la banque de donn�
 print(srtm);
 ```
 
-- Pour afficher la couche srtm, il suffit d'utiliser la commande « Map.Addlayer » qui permet d’ajouter une couche à la carte. Cependant il faut souvent définir des paramètres de visualisation pour améliorer les paramètres par défaut des couches. 
+- Pour afficher la couche srtm, il suffit d'utiliser la commande « Map.addLayer » qui permet d’ajouter une couche à la carte. Cependant il faut souvent définir des paramètres de visualisation pour améliorer les paramètres par défaut des couches. 
 
 
 ```javascript
-Map.Addlayer(srtm);
+Map.addLayer(srtm);
 ```
 
 <img src="../data/imgs/fig5_srtm3.png" width="1039" />
@@ -148,10 +148,15 @@ Le catalogue de données de Google Earth Engine permet d'accéder à de nombreus
 
 
 ```javascript
-var region_filtre=sent2.filterBounds(pnm);
-                                     //.filterDate("2020-07-01", "2020-08-30");
-                                     //.filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',10);
+var region_filtre=sent2.filterBounds(pnm)
+                                     .filterDate("2020-07-01", "2020-08-30")
+                                     .filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',10);
 
 print(region_filtre.size());
 ```
 
+### NOTE ; la fin de l'étape 4 ne semble pas vraiment fonctionner, la fonction de filtre ne fait pas le lien avec le call d'image et tout. à réviser
+
+# Étape 5 : Sélectionner des images satellitaires selon les contours d’un shapefile
+
+Dans les étapes précédentes, le lieu d’intérêt était le Parc National de la Maurice. Un repère a été placé à un endroit aléatoire dans le Parc. Il est cependant possible de travailler dans Google Earth Engine avec des superficies prédéterminées par exemple dans le cas d’un fichier shapefile. Pour ce faire, il vous faudra importer les fichiers shapefiles de votre ordinateur vers Google Earth Engine. 
