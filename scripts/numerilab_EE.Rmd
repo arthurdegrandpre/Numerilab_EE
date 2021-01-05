@@ -168,4 +168,60 @@ print(region_filtre.size());
 
 # Étape 5 : Sélectionner des images satellitaires selon les contours d’un shapefile
 
-Dans les étapes précédentes, le lieu d’intérêt était le Parc National de la Maurice. Un repère a été placé à un endroit aléatoire dans le Parc. Il est cependant possible de travailler dans Google Earth Engine avec des superficies prédéterminées par exemple dans le cas d’un fichier shapefile. Pour ce faire, il vous faudra importer les fichiers shapefiles de votre ordinateur vers Google Earth Engine. 
+Dans les étapes précédentes, le lieu d’intérêt était le Parc National de la Maurice. Un repère a été placé à un endroit aléatoire dans le Parc. Il est cependant possible de travailler dans Earth Engine avec des superficies prédéterminées par exemple dans le cas d’un fichier shapefile. Pour ce faire, il vous faudra importer les fichiers shapefiles de votre ordinateur vers Google Earth Engine.  
+  
+- Aller dans l’onglet « assets » pour voir les couches externes -> New -> Shape files  
+
+```{r, echo=F}
+include_graphics(img_path[9])
+```
+
+-	Sélectionner les couches .shp; .dbf;.shx;.prj associé à la couche shapefile désirée à partir d’un répertoire sur  votre ordinateur. -> Taper le nom que vous voulez lui donner ex. « PNM_poly » -> Upload
+
+```{r, echo=F}
+include_graphics(img_path[10])
+```
+
+- Pour confirmer que le fichier est importé, consulter le gestionnaire de tâche dans l’onglet « Task » du panneau droit. Une fois le fichier téléchargé, la barre de téléchargement devrait être remplie et si vous actualisez votre répertoire de couche, la couche importée devrait être affichée dans le panneau de gauche. 
+
+```{r, echo=F}
+include_graphics(img_path[11])
+```
+
+- Pour importer la couche shapefile dans votre code, cliquer sur la couche dans le panneau de gauche -> Importer -> renommer la couche « shape_pnm » dans votre code
+
+```{r, echo=F}
+include_graphics(img_path[12])
+```
+
+- Le code suivant aurait aussi permis de faire cette même opération
+
+```{javascript, eval=F}
+var pnm_poly = ee.FeatureCollection('users/XXX/PNM_poly');
+```
+
+Une fois le fichier shapefile importé, il est possible d’afficher la photo satellite seulement pour cette superficie avec l’outil « image.clip » et le code suivant:
+
+```{javascript, eval=F}
+var polygone = region.median();
+Map.addLayer(polygone.clip(shape_pnm),couleur_rgb,"Image Satellite ajustée1");
+```
+
+ou encore
+
+```{javascript, eval=F}
+Map.addLayer(image.clip(shape_pnm),couleur_rgb,"Image Satellite ajustée2");
+```
+
+```{r, echo=F}
+include_graphics(img_path[13])
+```
+
+# Étape 6 : Calculer un indice spectrale (ex: NDVI)
+
+Un autre exercice qui requiert peu de code avec Google Earth Engine est de créer une nouvelle couche de donnée qui contient une bande calculée comme l’indice NDVI.  
+
+### NOTE: ajouter définition du NDVI
+
+
+

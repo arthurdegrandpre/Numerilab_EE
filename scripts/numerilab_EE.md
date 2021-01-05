@@ -35,7 +35,7 @@ Earth Engine est un logiciel en ligne de la compagnie Google qui met à la dispo
 
 Voici quelques informations pour vous retrouver dans l'interface
 
-<img src="../data/imgs/fig1_interface.png" width="1465" />
+<img src="../data/imgs/fig01_interface.png" width="1465" />
 ### NOTE: P-E grandir la figure un peu?
 
 **Panneau de gauche**  
@@ -74,7 +74,7 @@ var pnm = /* color: #d63000 */ee.Geometry.Point([-72.97, 46.74])
 
 **N’oubliez pas d’enregistrer votre code à l’aide du bouton enregistrer**
 
-<img src="../data/imgs/fig2_pnm.png" width="749" />
+<img src="../data/imgs/fig02_pnm.png" width="749" />
 
 # Étape 3 : Charger et afficher une carte de l’élévation
 
@@ -84,11 +84,11 @@ Pour importer une couche, vous devrez la charger à partir de la banque de donn�
 
 -	Vous pouvez consulter l’information disponible pour cette couche dans les différents onglets du panneau qui s’est affiché. Ensuite, cliquez sur importer pour que la couche s’ajoute à votre environnement EE.  
 
-<img src="../data/imgs/fig3_srtm.png" width="1056" />
+<img src="../data/imgs/fig03_srtm.png" width="1056" />
 
 -	Une fois ajoutée, vous pouvez renommer la couche « srtm » 
 
-<img src="../data/imgs/fig4_srtm2.png" width="585" />
+<img src="../data/imgs/fig04_srtm2.png" width="585" />
 
 - Pour afficher les propriétés de la couche importée utiliser le code suivant et le résultat s’affichera dans le panneau droit
 
@@ -104,7 +104,7 @@ print(srtm);
 Map.addLayer(srtm);
 ```
 
-<img src="../data/imgs/fig5_srtm3.png" width="1039" />
+<img src="../data/imgs/fig05_srtm3.png" width="1039" />
 
 -	Pour afficher plus en détail le relief, il suffit de mettre des valeurs de relief plus près de celle de notre lieu d’intérêt. Il est aussi possible d’ajouter un nom à la couche que vous faites afficher.
 
@@ -120,7 +120,7 @@ Map.addLayer(srtm, {min: 0, max: 400},"Élévation");
 Map.addLayer(srtm, {min: 0, max: 400, palette: ['blue', 'yellow', 'red']},"Élévation colorée");
 ```
 
-<img src="../data/imgs/fig6_srtm4.png" width="1102" />
+<img src="../data/imgs/fig06_srtm4.png" width="1102" />
 
 - L’information sur l’élévation est utile, mais elle peut être complémentée avec d’autres informations comme le relief au sol et les pentes. Les outils ee.Terrain.hillshade() et ee.Terrain.slope() permettent de calculer rapidement ces attributs.
 
@@ -133,7 +133,7 @@ var pente = ee.Terrain.slope(srtm);
 Map.addLayer(pente, {min: 0, max: 30}, 'Pente')
 ```
 
-<img src="../data/imgs/fig7_srtm5.png" width="1052" />
+<img src="../data/imgs/fig07_srtm5.png" width="1052" />
 
 
 # Étape 4 : Travailler avec des images satellitaires pour une région déterminée
@@ -142,7 +142,7 @@ Le catalogue de données de Google Earth Engine permet d'accéder à de nombreus
 
 - Pour ce faire, rechercher « sentinel » dans la barre de recherche et sélectionner «Sentinel-2 MSI : Multispectral Instrument, Level-1C, l'importer puis renommer l’objet « sent2 »
 
-<img src="../data/imgs/fig8_sen.png" width="816" />
+<img src="../data/imgs/fig08_sen.png" width="816" />
 
 - Utiliser le code ci-dessous pour voir le nombre d’images trouvées autour du lieu d’intérêt qu’est le Parc national de la Mauricie
 
@@ -159,4 +159,53 @@ print(region_filtre.size());
 
 # Étape 5 : Sélectionner des images satellitaires selon les contours d’un shapefile
 
-Dans les étapes précédentes, le lieu d’intérêt était le Parc National de la Maurice. Un repère a été placé à un endroit aléatoire dans le Parc. Il est cependant possible de travailler dans Google Earth Engine avec des superficies prédéterminées par exemple dans le cas d’un fichier shapefile. Pour ce faire, il vous faudra importer les fichiers shapefiles de votre ordinateur vers Google Earth Engine. 
+Dans les étapes précédentes, le lieu d’intérêt était le Parc National de la Maurice. Un repère a été placé à un endroit aléatoire dans le Parc. Il est cependant possible de travailler dans Earth Engine avec des superficies prédéterminées par exemple dans le cas d’un fichier shapefile. Pour ce faire, il vous faudra importer les fichiers shapefiles de votre ordinateur vers Google Earth Engine.  
+  
+- Aller dans l’onglet « assets » pour voir les couches externes -> New -> Shape files  
+
+<img src="../data/imgs/fig09_shp.png" width="879" />
+
+-	Sélectionner les couches .shp; .dbf;.shx;.prj associé à la couche shapefile désirée à partir d’un répertoire sur  votre ordinateur. -> Taper le nom que vous voulez lui donner ex. « PNM_poly » -> Upload
+
+<img src="../data/imgs/fig10_shp2.png" width="1265" />
+
+- Pour confirmer que le fichier est importé, consulter le gestionnaire de tâche dans l’onglet « Task » du panneau droit. Une fois le fichier téléchargé, la barre de téléchargement devrait être remplie et si vous actualisez votre répertoire de couche, la couche importée devrait être affichée dans le panneau de gauche. 
+
+<img src="../data/imgs/fig11_shp3.png" width="1362" />
+
+- Pour importer la couche shapefile dans votre code, cliquer sur la couche dans le panneau de gauche -> Importer -> renommer la couche « shape_pnm » dans votre code
+
+<img src="../data/imgs/fig12_shp4.png" width="1152" />
+
+- Le code suivant aurait aussi permis de faire cette même opération
+
+
+```javascript
+var pnm_poly = ee.FeatureCollection('users/XXX/PNM_poly');
+```
+
+Une fois le fichier shapefile importé, il est possible d’afficher la photo satellite seulement pour cette superficie avec l’outil « image.clip » et le code suivant:
+
+
+```javascript
+var polygone = region.median();
+Map.addLayer(polygone.clip(shape_pnm),couleur_rgb,"Image Satellite ajustée1");
+```
+
+ou encore
+
+
+```javascript
+Map.addLayer(image.clip(shape_pnm),couleur_rgb,"Image Satellite ajustée2");
+```
+
+<img src="../data/imgs/fig13_shp5.png" width="899" />
+
+# Étape 6 : Calculer un indice spectrale (ex: NDVI)
+
+Un autre exercice qui requiert peu de code avec Google Earth Engine est de créer une nouvelle couche de donnée qui contient une bande calculée comme l’indice NDVI.  
+
+### NOTE: ajouter définition du NDVI
+
+
+
