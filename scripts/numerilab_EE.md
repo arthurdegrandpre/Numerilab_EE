@@ -1,0 +1,157 @@
+---
+title: "Numérilab - Introduction à Google Earth Engine"
+author: "Esteban Hamel et Arthur de Grandpré"
+date: "14 janvier 2021"
+output: 
+  html_document: 
+    highlight: haddock
+    keep_md: yes
+    theme: readable
+    toc: yes
+---
+
+
+```r
+library(knitr)
+library(png)
+```
+
+
+# Résumé
+Cet atelier Numérliab a pour objectif d'introduire la plateforme Google Earth Engine (EE) et certaines de ses fonctionnalités.  
+
+Earth Engine est un logiciel en ligne de la compagnie Google qui met à la disposition de ses utilisateurs une grande variété de couches géographiques (images satellitaires, données climatiques, topographiques, etc.), ainsi que des outils pour les analyser. L’avantage de EE est qu’une grande majorité des calculs sont faits directement par les serveurs de Google sur le cloud, donc beaucoup plus rapidement que sur un ordinateur personnel. Le but de cet atelier n’est pas d'apprendre un nouveau language de programmation, mais plutôt de présenter certains outils et codes reproductibles et adaptables à vos besoins.
+
+# Objectifs
+- Importer et visualiser des images satellites propres à une région et un moment donné  
+- Travailler avec des images satellites pour une région déterminée par un fichier shapefile  
+- Faire un calcul du NDVI  
+- Faire une classification d’image satellite  
+- Exporter les couches produites sous forme de raster  
+
+# Étape 1 : Introduction à l'interface EE
+
+### NOTE : AJOUT DE LIENS / MÉTHODES D'ACCÈS A EE? p-e un peu plus d'intro de base
+
+Voici quelques informations pour vous retrouver dans l'interface
+
+<img src="../data/imgs/fig1_interface.png" width="1465" />
+### NOTE: P-E grandir la figure un peu?
+
+**Panneau de gauche**  
+-	Bibliothèque où sont enregistrés tous vos codes  
+-	Bibliothèque de GEE où sont les exemples de codes et la description des outils GEE  
+-	Bibliothèque de vos propres couches (shapefiles, raster et autres bases de données).  
+
+**Panneau du centre**  
+- Éditeur de code où vous faites vos calculs  
+
+**Panneau de droite**  
+- Onglet d’inspection de la couche pour inspecter les métadonnées de votre carte (informations sur les couches et les pixels)  
+- Console des sorties où l’information des différentes cartes ou les graphiques s’affichent  
+- Gestionnaire de tâche pour les documents importés ou exportés  
+
+**Barre de recherche**  
+- Pour rechercher un lieu ou des couches de données  
+
+**Carte**  
+- Carte interactive où sont affichées vos couches calculées par-dessus une carte typique de Google  
+
+# Étape 2 : Sélectionner un lieu d’intérêt à l’aide des outils de géométrie
+
+Naviguer sur la carte jusqu’au Parc National de la Mauricie. Il est aussi possible de faire une recherche à l’aide de la barre de recherche, p. ex. "Shawinigan".  
+
+1.	À l’aide de l’outil de géométrie, « ajouter un repère » en cliquant sur le pictogramme de repère et déposez-le au milieu du Parc national.  
+2.	Cliquer sur « exit » une fois que le repère est placé  
+3.	Renommer le nouveau repère « pnm » dans le haut de votre script  
+  
+*Alternative*, utiliser la ligne de code suivante  
+
+
+```javascript
+var geometry = /* color: #d63000 */ee.Geometry.Point([-72.94,-48.78]);
+```
+
+**N’oubliez pas d’enregistrer votre code à l’aide du bouton enregistrer**
+
+<img src="../data/imgs/fig2_pnm.png" width="749" />
+
+# Étape 3 : Charger et afficher une carte de l’élévation
+
+Pour importer une couche, vous devrez la charger à partir de la banque de données de Earth Engine. Pour cela, il suffit de rechercher au sein du catalogue EE à l’aide de la barre de recherche et de l’importer. À noter que lorsqu’une couche est importée elle ne s’affichera pas directement. Comme aucunes limites n’ont été spécifiées pour cette couche, elle contient l’information reliée à une énorme superficie et le mieux est de la filtrer pour avoir un affichage autour d’un lieu d’intérêt.  Voici un exemple avec des données d’élévation.  
+  
+-	Pour ajouter la couche d’élévation SRTM, rechercher et sélectionner la couche NASA SRTM Digital Elevation 30m  
+
+-	Vous pouvez consulter l’information disponible pour cette couche dans les différents onglets du panneau qui s’est affiché. Ensuite, cliquez sur importer pour que la couche s’ajoute à votre environnement EE.  
+
+<img src="../data/imgs/fig3_srtm.png" width="1056" />
+
+-	Une fois ajoutée, vous pouvez renommer la couche « srtm » 
+
+<img src="../data/imgs/fig4_srtm2.png" width="585" />
+
+- Pour afficher les propriétés de la couche importée utiliser le code suivant et le résultat s’affichera dans le panneau droit
+
+
+```javascript
+print(srtm);
+```
+
+- Pour afficher la couche srtm, il suffit d'utiliser la commande « Map.Addlayer » qui permet d’ajouter une couche à la carte. Cependant il faut souvent définir des paramètres de visualisation pour améliorer les paramètres par défaut des couches. 
+
+
+```javascript
+Map.Addlayer(srtm);
+```
+
+<img src="../data/imgs/fig5_srtm3.png" width="1039" />
+
+-	Pour afficher plus en détail le relief, il suffit de mettre des valeurs de relief plus près de celle de notre lieu d’intérêt. Il est aussi possible d’ajouter un nom à la couche que vous faites afficher.
+
+
+```javascript
+Map.addLayer(srtm, {min: 0, max: 400},"Élévation");
+```
+
+-	Pour faciliter la visualisation de l'élévation, il est possible de donner un gradient de couleur aux valeurs d’élévation.
+
+
+```javascript
+Map.addLayer(srtm, {min: 0, max: 400, palette: ['blue', 'yellow', 'red']},"Élévation colorée");
+```
+
+<img src="../data/imgs/fig6_srtm4.png" width="1102" />
+
+- L’information sur l’élévation est utile, mais elle peut être complémentée avec d’autres informations comme le relief au sol et les pentes. Les outils ee.Terrain.hillshade() et ee.Terrain.slope() permettent de calculer rapidement ces attributs.
+
+
+```javascript
+var ombre = ee.Terrain.hillshade(srtm);
+Map.addLayer(ombre, {min: 150, max:255}, 'Ombre');
+
+var pente = ee.Terrain.slope(srtm);
+Map.addLayer(pente, {min: 0, max: 30}, 'Pente')
+```
+
+<img src="../data/imgs/fig7_srtm5.png" width="1052" />
+
+
+# Étape 4 : Travailler avec des images satellitaires pour une région déterminée
+
+Le catalogue de données de Google Earth Engine permet d'accéder à de nombreuses sources d'images satellitaires. Pour travailler sur d’un lieu d’intérêt, il faudra filtrer les données disponibles pour ce lieu pour une période donnée. Commencez par importer les images du satellite Sentinel 2 (aussi possible pour Landsat).  
+
+- Pour ce faire, rechercher « sentinel » dans la barre de recherche et sélectionner «Sentinel-2 MSI : Multispectral Instrument, Level-1C, l'importer puis renommer l’objet « sent2 »
+
+<img src="../data/imgs/fig8_sen.png" width="816" />
+
+- Utiliser le code ci-dessous pour voir le nombre d’images trouvées autour du lieu d’intérêt qu’est le Parc national de la Mauricie
+
+
+```javascript
+var region_filtre=sent2.filterBounds(pnm);
+                                     //.filterDate("2020-07-01", "2020-08-30");
+                                     //.filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',10);
+
+print(region_filtre.size());
+```
+
