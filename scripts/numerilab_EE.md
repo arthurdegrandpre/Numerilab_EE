@@ -306,3 +306,49 @@ var ndvi2 = pnm_clip.expression(
  });
 Map.addLayer(ndvi2, {min: 0, max: 1,palette:['cyan','green','orange'] }, "NDVI Méthode 2");
 ```
+
+# Étape 7 : Faire une classification d'image à l'aide de Google Earth Engine
+
+Le prochain exercice vise à introduire à la classification d’image à l’aide de Google Earth Engine. Le code ci-dessous permettra de faire une classification supervisée des différents types de paysages à partir d’image satellite.  À l’aide d’un jeu de données préliminaires où les différents types de paysages sont connus, l’outil X permet d’extrapoler la classification à une plus grande échelle.  
+  
+### NOTE: outil à identifier, ça pourrait être considéré comme du machine learning de bas niveau
+
+- La première manipulation sera de créer les polygones du jeu de données d’entrainement. Faites attention à ne  pas prendre de trop grosses superficies, sinon il pourrait y avoir une erreur lorsque vous exécuterez le code. À l’aide des outils de géométrie, créer un polygone dans un endroit boisé. Refaites cette manipulation pour des polygones que vous placerez dans une terre agricole, une étendue d’eau et en milieu urbain. Ces polygones  s’appelleront  respectivement « foret », « agricole », « eau » et « ville »
+
+<img src="../data/imgs/fig14_training.png" width="1134" />
+
+- Ensuite, il faut ajouter une étiquette à chacun des polygones, un peu de la même manière qu’on ajoute des attributs à la table d’attribut d’un polygone dans un shapefile. Ces étiquettes seront utiles lorsqu’on assemblera les polygones dans une même couche. Pour ajouter une étiquette, aller dans les propriétés d’un polygone -> sélectionner « FeatureCollection » -> Ajouter une propriété -> la nommer « landcover » et lui donner une valeur de 0 -> Ok.  Refaite de même avec les autres polygones où vous créerez une propriété nommée « landcover » et avec des valeurs de 1,2 et 3 respectivement. Après cela, chaque polygone devrait être rendu un objet « FeatureCollection ».
+
+<img src="../data/imgs/fig15_training2.png" width="623" />
+
+-	Il faut maintenant combiner les polygones ensemble dans une même couche. Utiliser le code suivant pour faire cet assemblage et voyer le résultat dans le panneau de droite.
+
+
+```javascript
+var classNames = foret.merge(agricole).merge(eau).merge(ville);
+print(classNames);
+```
+
+<img src="../data/imgs/fig16_training3.png" width="1030" />
+
+-	Vous êtes maintenant en mesure d’utiliser la couche précédente pour créer un jeu de données d’entrainement pour la classification à plus grande échelle. Le jeu de donnée d’entrainement va calculer quelles sont les valeurs des pixels reliés à chaque polygone pour les différentes bandes spectrales, ici les bandes 2 à 7. 
+
+### NOTE: pourquoi 2 à 7? vite comme ça 2,3,4,8 serait probablement un meilleur choix
+
+
+
+-	Vous pouvez maintenant faire le test de votre classification sur l’image satellite complète.
+
+
+
+<img src="../data/imgs/fig17_classif.png" width="748" />
+
+### NOTE: ça pourrait être fait directement sur l'image crop du pnm+ndvi+srtm non? donc on évite d'avoir à regénérer le stack, je crois que si on tourne en rond on va prendre trop de temps
+
+# Étape 8 : Exportation vers un fichier raster via Google Drive
+
+Il est possible d’exporter les couches créées dans Google Earth Engine pour continuer de les modifier dans des logiciels SIG. Par exemple, on pourrait vouloir exporter une partie de la classification précédente dans un fichier raster. Comme l’image satellite est relativement volumineuse, vous exporterez seulement une partie de la couche. 
+
+-	Pour définir la région d’exportation, ajouter un repère que vous nommerez « exporter ».
+
+### SUGGESTION: peut-être montrer qu'il est facile de faire le tout en batch pour genre toutes les images d'une année ou d'une série? je crois que c'est là la grosse force de EE
