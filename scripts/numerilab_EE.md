@@ -219,11 +219,13 @@ Dans les étapes précédentes, le lieu d’intérêt était le Parc National de
 var pnm_poly = ee.FeatureCollection('users/XXX/PNM_poly');
 ```
 
-Une fois le fichier shapefile importé, il est possible d’afficher la photo satellite seulement pour cette superficie avec l’outil « image.clip » et le code suivant:
+Une fois le fichier shapefile importé, il est possible d’afficher la photo satellite seulement pour cette superficie avec l’outil «.clip » et le code suivant:
+
+### probablement besoin de démêler les différents calls. aussi, pourquoi la fonction median et pourquoi définir polygone
 
 
 ```javascript
-var polygone = region.median();
+var polygone = pnm_s2_best.median();
 Map.addLayer(polygone.clip(shape_pnm),couleur_rgb,"Image Satellite ajustée1");
 ```
 
@@ -232,6 +234,14 @@ ou encore
 
 ```javascript
 Map.addLayer(image.clip(shape_pnm),couleur_rgb,"Image Satellite ajustée2");
+```
+
+Alternative Arthur : 
+
+
+```javascript
+var pnm_clip = pnm_s2_best.clip(shape_pnm);
+Map.addLayer(pnm_clip,couleur_rgb,"Image Satellite coupée");
 ```
 
 <img src="../data/imgs/fig13_shp5.png" width="899" />
