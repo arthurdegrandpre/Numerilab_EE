@@ -262,9 +262,57 @@ include_graphics(img_path[13])
 
 # Étape 6 : Calculer un indice spectrale (ex: NDVI)
 
-Un autre exercice qui requiert peu de code avec Google Earth Engine est de créer une nouvelle couche de donnée qui contient une bande calculée comme l’indice NDVI.  
+Un autre exercice qui requiert peu de code avec Google Earth Engine est de créer une nouvelle couche de donnée qui contient une bande calculée comme l’indice NDVI (Normalized difference vegetation index).  
+  
+Ce type d'index est souvent utilisé pour mettre en évidence certains éléments des images. Dans le cas du NDVI, il s'agit d'un ratio entre les réflectances des bandes rouge et proche infra-rouge qui permet de mettre en évidence la présence de végétation au sein d'une image.  
 
-### NOTE: ajouter définition du NDVI
+$$NDVI = \frac{NIR-RED}{NIR+RED} $$
+Différentes méthodes permettent de créer une telle couche :
 
+### NOTE : ici j'Ai mis une version alternative de tes chunks avec des calls qui fonctionnaient mieux pour moi, je ne suis pas certain de pourquoi tu callais region.map et de l'utilité de maxNDVI, on en jasera
+1. utiliser une fonction  
+  
+```{javascript, eval=F}
+var ndvi = region.map (function (image) {
+  var result=image.normalizedDifference(["B8", "B4"]).rename("NDVI"); 
+  return image.addBands(result);
+});
+var maxNDVI= ndvi.select("NDVI");
+Map.addLayer(maxNDVI, {min:0,max:1,palette:['red','yellow','green']},"NDVI Méthode1");
+```
+  
+version Arthur : 
 
+```{javascript, eval=F}
+var ndvi = function (pnm_clip) {
+  var result=pnm_clip.normalizedDifference(["B8", "B4"]).rename("NDVI"); 
+  return pnm_clip.addBands(result);
+};
 
+Map.addLayer(ndvi(pnm_clip), {bands:['NDVI'],min:0,max:1,palette:['red','yellow','green']},"NDVI Méthode1");
+```
+  
+  
+2. faire un calcul de la différence des bandes dans une expression  
+
+```{javascript, eval=F}
+var NDVI2 = image.expression(
+     "(NIR - RED) / (NIR + RED)",
+    {
+      RED: image.select("B4"),    //  RED
+      NIR: image.select("B8"),    // NIR
+ });
+Map.addLayer(NDVI2, {min: 0, max: 1,palette:['cyan','green','orange'] }, "NDVI Méthode 2");
+```
+
+version Arthur:
+
+```{javascript, eval=F}
+var ndvi2 = pnm_clip.expression(
+     "(NIR - RED) / (NIR + RED)",
+    {
+      RED: image.select("B4"),
+      NIR: image.select("B8"),
+ });
+Map.addLayer(ndvi2, {min: 0, max: 1,palette:['cyan','green','orange'] }, "NDVI Méthode 2");
+```
