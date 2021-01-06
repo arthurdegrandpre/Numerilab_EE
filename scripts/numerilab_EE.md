@@ -144,18 +144,53 @@ Le catalogue de données de Google Earth Engine permet d'accéder à de nombreus
 
 <img src="../data/imgs/fig08_sen.png" width="816" />
 
-- Utiliser le code ci-dessous pour voir le nombre d’images trouvées autour du lieu d’intérêt qu’est le Parc national de la Mauricie
+- Utiliser le code ci-dessous pour voir le nombre d’images trouvées autour du lieu d’intérêt qu’est le Parc national de la Mauricie entre septembre et octobre 2020, avec moins de 10% de couverture nuageuse.
 
 
 ```javascript
-var region_filtre=sent2.filterBounds(pnm)
-                                     .filterDate("2020-07-01", "2020-08-30")
-                                     .filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',10);
+var pnm_s2=sent2.filterBounds(pnm)
+                              .filterDate("2020-07-01", "2020-08-30")
+                              .filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',10);
 
-print(region_filtre.size());
+print(pnm_s2.size(),"n. images");
+print(pnm_s2, "propriétés pnm_s2")
+                              
 ```
 
-### NOTE ; la fin de l'étape 4 ne semble pas vraiment fonctionner, la fonction de filtre ne fait pas le lien avec le call d'image et tout. à réviser
+-	Une autre façon serait de trier la bibliothèque d’image selon les critères désirés autour d’un point
+
+
+```javascript
+var pnm_s2_best = ee.ImageCollection(sent2)
+    .filterDate("2020-07-01", "2020-09-30")
+    .filterBounds(pnm)
+    .sort("CLOUD_COVERAGE_ASSESSMENT")
+    .first();
+
+print(pnm_s2_best,"meilleur image");
+    
+//extra : 2nd best?
+var pnm_s2_2best = ee.ImageCollection(sent2)
+    .filterDate("2020-07-01", "2020-09-30")
+    .filterBounds(pnm)
+    .sort("CLOUD_COVERAGE_ASSESSMENT")
+    .tolist(2).get(1); 
+print(pnm_s2_2best, "2e meilleur image")
+      
+```
+
+-	Pour afficher l’image satellite, utilisez la fonction « Map.addLayer », cependant il faudra définir d’avance certains paramètres de visualisation. Ces paramètres viseront à afficher les bandes rouge, bleu et verte.
+
+
+```r
+var couleur_rgb = {
+        bands: ["B4", "B3", "B2"],
+        min: 0,
+        max: 1850
+        };
+
+Map.addLayer(pnm_s2_best,couleur_rgb,"Image Sentinel-2");
+```
 
 # Étape 5 : Sélectionner des images satellitaires selon les contours d’un shapefile
 
