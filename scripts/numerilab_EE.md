@@ -36,7 +36,6 @@ Earth Engine est un logiciel en ligne de la compagnie Google qui met à la dispo
 Voici quelques informations pour vous retrouver dans l'interface
 
 <img src="../data/imgs/fig01_interface.png" width="1465" />
-### NOTE: P-E grandir la figure un peu?
 
 **Panneau de gauche**  
 -	Bibliothèque où sont enregistrés tous vos codes  
@@ -148,34 +147,35 @@ Le catalogue de données de Google Earth Engine permet d'accéder à de nombreus
 
 
 ```javascript
-var pnm_s2=sent2.filterBounds(pnm)
-                              .filterDate("2020-07-01", "2020-08-30")
-                              .filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',10);
+var pnm_s2=sent2
+    .filterBounds(pnm)
+    .filterDate("2020-07-01", "2020-08-30")
+    .filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',10);
 
 print(pnm_s2.size(),"n. images");
 print(pnm_s2, "propriétés pnm_s2")
                               
 ```
 
--	Une autre façon serait de trier la bibliothèque d’image selon les critères désirés autour d’un point
+-	On peut ensuite sélectionner une image qui pourra être affichée dans l'interface interactive
 
 
 ```javascript
-var pnm_s2_best = ee.ImageCollection(sent2)
-    .filterDate("2020-07-01", "2020-09-30")
+var pnm_i = sent2
     .filterBounds(pnm)
+    .filterDate("2020-07-01", "2020-09-30")
     .sort("CLOUD_COVERAGE_ASSESSMENT")
     .first();
 
-print(pnm_s2_best,"meilleur image");
+print(pnm_i,"meilleur image");
     
 //extra : 2nd best?
-var pnm_s2_2best = ee.ImageCollection(sent2)
+var pnm_i2 = sent2
     .filterDate("2020-07-01", "2020-09-30")
     .filterBounds(pnm)
     .sort("CLOUD_COVERAGE_ASSESSMENT")
-    .tolist(2).get(1); 
-print(pnm_s2_2best, "2e meilleur image")
+    .select(1);  //le premier index est 0, donc la 2e image est 1
+print(pnm_i2, "2e meilleur image")
       
 ```
 
@@ -189,7 +189,7 @@ var couleur_rgb = {
         max: 1850
         };
 
-Map.addLayer(pnm_s2_best,couleur_rgb,"Image Sentinel-2");
+Map.addLayer(pnm_i,couleur_rgb,"Image Sentinel-2");
 ```
 
 # Étape 5 : Sélectionner des images satellitaires selon les contours d’un shapefile
@@ -221,27 +221,9 @@ var pnm_poly = ee.FeatureCollection('users/XXX/PNM_poly');
 
 Une fois le fichier shapefile importé, il est possible d’afficher la photo satellite seulement pour cette superficie avec l’outil «.clip » et le code suivant:
 
-### probablement besoin de démêler les différents calls. aussi, pourquoi la fonction median et pourquoi définir polygone
-
 
 ```javascript
-var polygone = pnm_s2_best.median();
-Map.addLayer(polygone.clip(shape_pnm),couleur_rgb,"Image Satellite ajustée1");
-```
-
-ou encore
-
-
-```javascript
-Map.addLayer(image.clip(shape_pnm),couleur_rgb,"Image Satellite ajustée2");
-```
-
-Alternative Arthur : 
-
-
-```javascript
-var pnm_clip = pnm_s2_best.clip(shape_pnm);
-Map.addLayer(pnm_clip,couleur_rgb,"Image Satellite coupée");
+Map.addLayer(pnm_i.clip(shape_pnm),couleur_rgb,"Image Satellite coupée");
 ```
 
 <img src="../data/imgs/fig13_shp5.png" width="899" />
@@ -255,50 +237,25 @@ Ce type d'index est souvent utilisé pour mettre en évidence certains élément
 $$NDVI = \frac{NIR-RED}{NIR+RED} $$
 Différentes méthodes permettent de créer une telle couche :
 
-### NOTE : ici j'Ai mis une version alternative de tes chunks avec des calls qui fonctionnaient mieux pour moi, je ne suis pas certain de pourquoi tu callais region.map et de l'utilité de maxNDVI, on en jasera
 1. utiliser une fonction  
-  
-
-```javascript
-var ndvi = region.map (function (image) {
-  var result=image.normalizedDifference(["B8", "B4"]).rename("NDVI"); 
-  return image.addBands(result);
-});
-var maxNDVI= ndvi.select("NDVI");
-Map.addLayer(maxNDVI, {min:0,max:1,palette:['red','yellow','green']},"NDVI Méthode1");
-```
-  
-version Arthur : 
 
 
 ```javascript
-var ndvi = function (pnm_clip) {
-  var result=pnm_clip.normalizedDifference(["B8", "B4"]).rename("NDVI"); 
-  return pnm_clip.addBands(result);
+var ndvi = function (x) {
+  var result=x.normalizedDifference(["B8", "B4"]).rename("NDVI"); 
+  return x.addBands(result);
 };
 
-Map.addLayer(ndvi(pnm_clip), {bands:['NDVI'],min:0,max:1,palette:['red','yellow','green']},"NDVI Méthode1");
+var ndvi1 = ndvi(pnm_i);
+
+Map.addLayer(ndvi1, {bands:['NDVI'],min:0,max:1,palette:['red','yellow','green']},"NDVI Méthode1");
 ```
-  
   
 2. faire un calcul de la différence des bandes dans une expression  
 
 
 ```javascript
-var NDVI2 = image.expression(
-     "(NIR - RED) / (NIR + RED)",
-    {
-      RED: image.select("B4"),    //  RED
-      NIR: image.select("B8"),    // NIR
- });
-Map.addLayer(NDVI2, {min: 0, max: 1,palette:['cyan','green','orange'] }, "NDVI Méthode 2");
-```
-
-version Arthur:
-
-
-```javascript
-var ndvi2 = pnm_clip.expression(
+var ndvi2 = pnm_i.expression(
      "(NIR - RED) / (NIR + RED)",
     {
       RED: image.select("B4"),
@@ -309,10 +266,8 @@ Map.addLayer(ndvi2, {min: 0, max: 1,palette:['cyan','green','orange'] }, "NDVI M
 
 # Étape 7 : Faire une classification d'image à l'aide de Google Earth Engine
 
-Le prochain exercice vise à introduire à la classification d’image à l’aide de Google Earth Engine. Le code ci-dessous permettra de faire une classification supervisée des différents types de paysages à partir d’image satellite.  À l’aide d’un jeu de données préliminaires où les différents types de paysages sont connus, l’outil X permet d’extrapoler la classification à une plus grande échelle.  
+Le prochain exercice vise à introduire à la classification d’image à l’aide de Google Earth Engine. Le code ci-dessous permettra de faire une classification supervisée des différents types de paysages à partir d’image satellite.  À l’aide d’un jeu de données préliminaires où les différents types de paysages sont connus, l’outil cart permet d’extrapoler la classification à une plus grande échelle.  
   
-### NOTE: outil à identifier, ça pourrait être considéré comme du machine learning de bas niveau
-
 - La première manipulation sera de créer les polygones du jeu de données d’entrainement. Faites attention à ne  pas prendre de trop grosses superficies, sinon il pourrait y avoir une erreur lorsque vous exécuterez le code. À l’aide des outils de géométrie, créer un polygone dans un endroit boisé. Refaites cette manipulation pour des polygones que vous placerez dans une terre agricole, une étendue d’eau et en milieu urbain. Ces polygones  s’appelleront  respectivement « foret », « agricole », « eau » et « ville »
 
 <img src="../data/imgs/fig14_training.png" width="1134" />
@@ -333,8 +288,6 @@ print(classNames);
 
 -	Vous êtes maintenant en mesure d’utiliser la couche précédente pour créer un jeu de données d’entrainement pour la classification à plus grande échelle. Le jeu de donnée d’entrainement va calculer quelles sont les valeurs des pixels reliés à chaque polygone pour les différentes bandes spectrales, ici les bandes 2 à 7. 
 
-### NOTE: pourquoi 2 à 7? vite comme ça 2,3,4,8 serait probablement un meilleur choix
-
 
 
 -	Vous pouvez maintenant faire le test de votre classification sur l’image satellite complète.
@@ -343,7 +296,10 @@ print(classNames);
 
 <img src="../data/imgs/fig17_classif.png" width="748" />
 
-### NOTE: ça pourrait être fait directement sur l'image crop du pnm+ndvi+srtm non? donc on évite d'avoir à regénérer le stack, je crois que si on tourne en rond on va prendre trop de temps
+Le résultat précédent n’est pas parfait. Il serait possible, par exemple, de refaire la classification avec des couches d'information supplémentaires, comme l’élévation. L’outil " addBands " permet facilement de regrouper des couches d’informations.
+
+
+
 
 # Étape 8 : Exportation vers un fichier raster via Google Drive
 
