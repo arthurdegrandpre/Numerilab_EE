@@ -20,7 +20,7 @@ library(png)
 # Résumé
 Cet atelier Numérliab a pour objectif d'introduire la plateforme Google Earth Engine (EE) et certaines de ses fonctionnalités.  
 
-Earth Engine est un logiciel en ligne de la compagnie Google qui met à la disposition de ses utilisateurs une grande variété de couches géographiques (images satellitaires, données climatiques, topographiques, etc.), ainsi que des outils pour les analyser. L’avantage de EE est qu’une grande majorité des calculs sont faits directement par les serveurs de Google sur le cloud, donc beaucoup plus rapidement que sur un ordinateur personnel. Le but de cet atelier n’est pas d'apprendre un nouveau language de programmation, mais plutôt de présenter certains outils et codes reproductibles et adaptables à vos besoins.
+Earth Engine est un logiciel en ligne de la compagnie Google qui met à la disposition de ses utilisateurs une grande variété de données géographiques (images satellitaires, données climatiques, topographiques, etc.), ainsi que des outils pour les analyser. L’avantage de EE est qu’une grande majorité des calculs sont faits directement par les serveurs de Google sur le cloud, donc beaucoup plus rapidement que sur un ordinateur personnel. Le but de cet atelier n’est pas d'apprendre un nouveau language de programmation, mais plutôt de présenter certains outils et codes reproductibles et adaptables à vos besoins.
 
 # Objectifs
 - Importer et visualiser des images satellites propres à une région et un moment donné  
@@ -258,8 +258,8 @@ Map.addLayer(ndvi1, {bands:['NDVI'],min:0,max:1,palette:['red','yellow','green']
 var ndvi2 = pnm_i.expression(
      "(NIR - RED) / (NIR + RED)",
     {
-      RED: image.select("B4"),
-      NIR: image.select("B8"),
+      RED: pnm_i.select("B4"),
+      NIR: pnm_i.select("B8"),
  });
 Map.addLayer(ndvi2, {min: 0, max: 1,palette:['cyan','green','orange'] }, "NDVI Méthode 2");
 ```
@@ -286,13 +286,35 @@ print(classNames);
 
 <img src="../data/imgs/fig16_training3.png" width="1030" />
 
--	Vous êtes maintenant en mesure d’utiliser la couche précédente pour créer un jeu de données d’entrainement pour la classification à plus grande échelle. Le jeu de donnée d’entrainement va calculer quelles sont les valeurs des pixels reliés à chaque polygone pour les différentes bandes spectrales, ici les bandes 2 à 7. 
+-	Vous êtes maintenant en mesure d’utiliser la couche précédente pour créer un jeu de données d’entrainement pour la classification à plus grande échelle. Le jeu de donnée d’entrainement va calculer quelles sont les valeurs des pixels reliés à chaque polygone pour les différentes bandes spectrales, ici les bandes 2, 3, 4 et 8 (RGB et NIR avec une résolution de 10m). 
 
 
+```javascript
+var bands = ['B2', 'B3', 'B4', 'B8']; // pour définir les bandes a utiliser
+
+// le jeu de donnée
+var training = pnm_i.select(bands).sampleRegions({
+  collection: classNames,
+  properties: ['landcover'],
+  scale: 30
+});
+
+print(training, 'data training');
+```
 
 -	Vous pouvez maintenant faire le test de votre classification sur l’image satellite complète.
 
 
+```javascript
+//L’algorithme de classification (ici l'outil .cart mais il y en a d'autres)
+var classifier = ee.Classifier.cart().train({
+  features: training,
+  classProperty: 'landcover',
+  inputProperties: bands
+});
+
+var classification = pnm_i.select(bands).classify(classifier);
+```
 
 <img src="../data/imgs/fig17_classif.png" width="748" />
 
