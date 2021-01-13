@@ -39,7 +39,7 @@ Earth Engine est un logiciel en ligne de la compagnie Google qui met à la dispo
 Pour accéder aux différentes fonctionnalités de GEE, vous devez premièrement avoir un compte Google. À l’aide de votre identifiant Gmail, vous pourrez vous inscrire au lien suivant. https://signup.earthengine.google.com/#!/
 Une fois votre inscription complétée, il vous faudra aller sur l’interface pour faire vos scripts. https://code.earthengine.google.com/ 
 
-Voici quelques informations pour vous retrouver dans l'interface
+Voici quelques informations pour vous retrouver dans l'interface.
 
 <img src="../data/imgs/fig01_interface.png" width="1465" />
 
@@ -67,12 +67,12 @@ Voici quelques informations pour vous retrouver dans l'interface
 Naviguer sur la carte jusqu’au Parc National de la Mauricie. Il est aussi possible de faire une recherche à l’aide de la barre de recherche, p. ex. "Shawinigan".  
 
 1.	À l’aide de l’outil de géométrie, « ajouter un repère » en cliquant sur le pictogramme de repère et déposez-le au milieu du Parc national.  
-2.	Cliquer sur « exit » une fois que le repère est placé  
-3.	Renommer le nouveau repère « pnm » dans le haut de votre script  
+2.	Cliquer sur « exit » une fois que le repère est placé.  
+3.	Renommer le nouveau repère « pnm » dans le haut de votre script.  
   
 <img src="../data/imgs/fig02_pnm.png" width="749" />
 
-*Alternative*, utiliser la ligne de code suivante  
+*Alternative*, utiliser la ligne de code suivante. Pour importer le repère, il vous faudrait cliquer sur le bouton importer qui serait proposer après avoir taper ce code. 
 
 
 ```{.javascript .klippy}
@@ -80,24 +80,24 @@ var pnm = /* color: #d63000 */ee.Geometry.Point([-72.97, 46.74])
 
 ```
 
-**N’oubliez pas d’enregistrer votre code à l’aide du bouton enregistrer**
+**N’oubliez pas d’enregistrer votre code à l’aide du bouton enregistrer.**
 
 
 # Étape 3 : Charger et afficher une carte de l’élévation
 
 Pour importer une couche, vous devrez la charger à partir de la banque de données de Earth Engine. Pour cela, il suffit de rechercher au sein du catalogue GEE à l’aide de la barre de recherche et de l’importer. À noter que lorsqu’une couche est importée elle ne s’affichera pas directement. Comme aucunes limites n’ont été spécifiées pour cette couche, elle contient l’information reliée à une énorme superficie et le mieux est de la filtrer pour avoir un affichage autour d’un lieu d’intérêt.  Voici un exemple avec des données d’élévation.  
   
--	Pour ajouter la couche d’élévation SRTM, rechercher et sélectionner la couche NASA SRTM Digital Elevation 30m  
+-	Pour ajouter la couche d’élévation SRTM, rechercher et sélectionner la couche NASA SRTM Digital Elevation 30m .
 
 -	Vous pouvez consulter l’information disponible pour cette couche dans les différents onglets du panneau qui s’est affiché. Ensuite, cliquez sur importer pour que la couche s’ajoute à votre environnement EE.  
 
 <img src="../data/imgs/fig03_srtm.png" width="1056" />
 
--	Une fois ajoutée, vous pouvez renommer la couche « srtm » 
+-	Une fois ajoutée, vous pouvez renommer la couche « srtm ». 
 
 <img src="../data/imgs/fig04_srtm2.png" width="585" />
 
-- Pour afficher les propriétés de la couche importée utiliser le code suivant et le résultat s’affichera dans le panneau droit
+- Pour afficher les propriétés de la couche importée utiliser le code suivant et le résultat s’affichera dans le panneau droit.
 
 
 ```{.javascript .klippy}
@@ -161,7 +161,7 @@ Le catalogue de données de Google Earth Engine permet d'accéder à de nombreus
 
 <img src="../data/imgs/fig08_sen.png" width="816" />
 
-- Utiliser le code ci-dessous pour voir le nombre d’images trouvées autour du lieu d’intérêt qu’est le Parc national de la Mauricie entre septembre et octobre 2020, avec une couverture nuageuse moindre. 
+- Utiliser le code ci-dessous pour voir le nombre d’images trouvées autour du lieu d’intérêt qu’est le Parc national de la Mauricie entre septembre et octobre 2020, avec une couverture nuageuse moindre. La fonction .size() permet d'afficher dans la console de droite le nombre d'images correspondants à la requête définie.
 
 
 ```{.javascript .klippy}
@@ -223,11 +223,11 @@ var couleur_rgb = {
 Map.addLayer(pnm_i,couleur_rgb,"Image Sentinel-2");
 ```
 
-# Étape 5 : Sélectionner des images satellitaires selon les contours d’un shapefile
+# Étape 5 : Afficher une image satellite selon les contours d’un shapefile
 
 Dans les étapes précédentes, le lieu d’intérêt était le Parc National de la Maurice. Un repère a été placé à un endroit aléatoire dans le Parc. Il est cependant possible de travailler dans Earth Engine avec des superficies prédéterminées, par exemple dans le cas d’un fichier shapefile. Pour ce faire, il vous faudra importer les fichiers shapefiles de votre ordinateur vers Google Earth Engine.  
   
-- Aller dans l’onglet « assets » pour voir les couches externes -> New -> Shape files  
+- Aller dans l’onglet « assets » pour voir les couches externes -> New -> Shape files.  
 
 <img src="../data/imgs/fig09_shp.png" width="879" />
 
@@ -239,7 +239,7 @@ Dans les étapes précédentes, le lieu d’intérêt était le Parc National de
 
 <img src="../data/imgs/fig11_shp3.png" width="1362" />
 
-- Pour importer la couche shapefile dans votre code, cliquer sur la couche dans le panneau de gauche -> Importer -> renommer la couche « shape_pnm » dans votre code
+- Pour importer la couche shapefile dans votre code, cliquer sur la couche dans le panneau de gauche -> Importer -> renommer la couche « shape_pnm » dans votre code.
 
 <img src="../data/imgs/fig12_shp4.png" width="1152" />
 
@@ -247,7 +247,8 @@ Dans les étapes précédentes, le lieu d’intérêt était le Parc National de
 
 
 ```{.javascript .klippy}
-var pnm_poly = ee.FeatureCollection('users/XXX/PNM_poly'); // Ajouter une variable correspondant à un shapefile
+ // Ajouter une variable correspondant à un shapefile
+var pnm_poly = ee.FeatureCollection('users/XXX/PNM_poly');
 ```
 
 Une fois le fichier shapefile importé, il est possible d’afficher la photo satellite seulement pour cette superficie avec l’outil «.clip » et le code suivant:
@@ -264,35 +265,41 @@ Map.addLayer(pnm_i.clip(shape_pnm),couleur_rgb,"Image Satellite coupée");
 
 Un autre exercice qui requiert peu de code avec Google Earth Engine est de créer une nouvelle couche de donnée qui contient une bande calculée comme l’indice NDVI (Normalized difference vegetation index).  
   
-Ce type d'index est souvent utilisé pour mettre en évidence certains éléments des images. Dans le cas du NDVI, il s'agit d'un ratio entre les réflectances des bandes rouge et proche infra-rouge qui permet de mettre en évidence la présence de végétation au sein d'une image.  
+Ce type d'index est souvent utilisé pour mettre en évidence certains éléments des images. Dans le cas du NDVI, il s'agit d'un ratio entre les réflectances des bandes rouge et proche infra-rouge qui permet de mettre en évidence la présence de végétation au sein d'une image. La formule permettant de calculer l'indice NDVI est la suivante. 
 
 $$NDVI = \frac{NIR-RED}{NIR+RED} $$
 Différentes méthodes permettent de créer une telle couche :
 
-1. Utiliser une fonction  
+1. Utiliser une fonction.  
 
 
 ```{.javascript .klippy}
+// Définir la fonction 
 var ndvi = function (x) {
   var result=x.normalizedDifference(["B8", "B4"]).rename("NDVI"); 
   return x.addBands(result);
 };
 
+// Appliquer la fonction à une image
 var ndvi1 = ndvi(pnm_i);
 
+// Afficher le résultat
 Map.addLayer(ndvi1, {bands:['NDVI'],min:0,max:1,palette:['red','yellow','green']},"NDVI Méthode1");
 ```
   
-2. Faire un calcul de la différence des bandes dans une expression  
+2. Faire un calcul de la différence des bandes dans une expression.  
 
 
 ```{.javascript .klippy}
+// Créer l'expression à calculer
 var ndvi2 = pnm_i.expression(
      "(NIR - RED) / (NIR + RED)",
     {
       RED: pnm_i.select("B4"),
       NIR: pnm_i.select("B8"),
- }).rename('NDVI');
+ }).rename('NDVI'); // Donner un attribut à la bande créée
+
+// Afficher le résultat
 Map.addLayer(ndvi2, {min: 0, max: 1,palette:['cyan','green','orange'] }, "NDVI Méthode 2");
 ```
 
@@ -300,11 +307,11 @@ Map.addLayer(ndvi2, {min: 0, max: 1,palette:['cyan','green','orange'] }, "NDVI M
 
 Le prochain exercice vise à introduire à la classification d’image à l’aide de Google Earth Engine. Le code ci-dessous permettra de faire une classification supervisée des différents types de paysages à partir d’image satellite.  À l’aide d’un jeu de données préliminaires où les différents types de paysages sont connus, l’outil cart permet d’extrapoler la classification à une plus grande échelle.  
   
-- La première manipulation sera de créer les polygones du jeu de données d’entrainement. Faites attention à ne  pas prendre de trop grosses superficies, sinon il pourrait y avoir une erreur lorsque vous exécuterez le code. À l’aide des outils de géométrie, créez un polygone dans un endroit boisé. Refaites cette manipulation pour des polygones que vous placerez dans une terre agricole, une étendue d’eau et dans un milieu urbain. Ces polygones  s’appelleront  respectivement « foret », « agricole », « eau » et « ville »
+- La première manipulation sera de créer les polygones du jeu de données d’entrainement. Faites attention à ne  pas prendre de trop grosses superficies, sinon il pourrait y avoir une erreur lorsque vous exécuterez le code. À l’aide des outils de géométrie, créez un polygone dans un endroit boisé. Refaites cette manipulation pour des polygones que vous placerez dans une terre agricole, une étendue d’eau et dans un milieu urbain. Ces polygones  s’appelleront  respectivement « foret », « agricole », « eau » et « ville ».
 
 <img src="../data/imgs/fig14_training.png" width="1134" />
 
-- Ensuite, il faut ajouter une étiquette à chacun des polygones, un peu de la même manière qu’on ajoute des attributs à la table d’attribut dans un shapefile. Ces étiquettes seront utiles lorsqu’on assemblera les polygones dans une même couche. Pour ajouter une étiquette, aller dans les propriétés d’un polygone -> sélectionner « FeatureCollection » -> Ajouter une propriété -> la nommer « landcover » et lui donner une valeur de 0 -> Ok.  Refaite de même avec les autres polygones où vous créerez une propriété nommée « landcover » et avec des valeurs de 1,2 et 3 respectivement. Après cela, chaque polygone devrait être rendu un objet « FeatureCollection ».
+- Ensuite, il faut ajouter une étiquette à chacun des polygones, un peu de la même manière qu’on ajoute des attributs à la table d’attribut dans un shapefile. Ces étiquettes seront utiles lorsqu’on assemblera les polygones dans une même couche. Pour ajouter une étiquette, allez dans les propriétés d’un polygone -> Sélectionnez « FeatureCollection » -> Ajoutez une propriété -> Nommez-la « landcover » et lui donner une valeur de 0 (le chiffre zéro) -> Ok.  Refaites de même avec les autres polygones où vous créerez une propriété nommée « landcover » et avec des valeurs de 1,2 et 3 respectivement. Après cela, chaque polygone devrait être rendu un objet « FeatureCollection ».
 
 <img src="../data/imgs/fig15_training2.png" width="623" />
 
@@ -362,7 +369,7 @@ Le résultat précédent n’est pas parfait. Il serait probablement utile d'ajo
 // Ajouter d'autres bandes 
 var bands2 = ['B2', 'B3', 'B4', 'B8', 'NDVI']; // pour définir les bandes a utiliser
 
-// le jeu de donnée d'entrainement avec les nouvelles bandes de l'objet ndvi1
+// Le jeu de donnée d'entrainement avec les nouvelles bandes de l'objet ndvi1
 var training2 = ndvi1.select(bands2).sampleRegions({
   collection: classNames,
   properties: ['landcover'],
@@ -370,7 +377,7 @@ var training2 = ndvi1.select(bands2).sampleRegions({
 });
 
 
-//L'algorithme de classification
+// L'algorithme de classification
 var classifier2 = ee.Classifier.cart().train({
   features: training2,
   classProperty: 'landcover',
@@ -431,7 +438,7 @@ Export.image.toDrive({
 
 L’interface de Earth Engine permet de faire rapidement des graphiques par exemple pour voir la distribution des données d’une couche.  Dans les manipulations suivantes, vous reprendrez la couche d’élévation ajusté au contour du parc national de la Mauricie. Ensuite il vous sera possible de construire un histogramme pour voir la distribution de l’élévation dans cette couche.
 
--	Créer la couche d’élévation pour le Parc National
+-	Créer la couche d’élévation pour le Parc National.
 
 
 ```{.javascript .klippy}
