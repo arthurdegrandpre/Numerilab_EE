@@ -142,12 +142,15 @@ var ombre = ee.Terrain.hillshade(srtm);
 
 // Visualier la couche de modèle relief ombré
 Map.addLayer(ombre, {min: 150, max:255}, 'Ombre');
+```
 
+
+```{.javascript .klippy}
 // Créer une carte des pentes
 var pente = ee.Terrain.slope(srtm);
 
 //Afficher la carte des pentes
-Map.addLayer(pente, {min: 0, max: 30}, 'Pente')
+Map.addLayer(pente, {min: 0, max: 30}, 'Pente');
 ```
 
 <img src="../data/imgs/fig07_srtm5.png" width="1052" />
@@ -285,6 +288,7 @@ var ndvi1 = ndvi(pnm_i);
 
 // Afficher le résultat
 Map.addLayer(ndvi1, {bands:['NDVI'],min:0,max:1,palette:['red','yellow','green']},"NDVI Méthode1");
+print(ndvi1,"ndvi1");
 ```
   
 2. Faire un calcul de la différence des bandes dans une expression.  
@@ -375,8 +379,11 @@ var training2 = ndvi1.select(bands2).sampleRegions({
   properties: ['landcover'],
   scale: 30
 });
+```
 
 
+
+```{.javascript .klippy}
 // L'algorithme de classification
 var classifier2 = ee.Classifier.cart().train({
   features: training2,
@@ -384,6 +391,10 @@ var classifier2 = ee.Classifier.cart().train({
   inputProperties: bands2
 });
 
+```
+
+
+```{.javascript .klippy}
 // Appliquer la classification à l'objet ndvi1
 var classification2 = ndvi1.select(bands2).classify(classifier2);
 
