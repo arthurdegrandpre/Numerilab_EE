@@ -519,6 +519,3 @@ print(Chart2);
 Une fois le graphique afficher dans la console, il vous est possible de l’agrandir et d’exporter les données sous forme de table en différents formats.
 
 **Fin du numerilab**
-
-
-### SUGGESTION: peut-être montrer qu'il est facile de faire le tout en batch pour genre toutes les images d'une année ou d'une série? je crois que c'est là la grosse force de EE
