@@ -8,7 +8,7 @@ output:
     keep_md: yes
     theme: readable
     toc: true
-    toc_float: true
+    toc_float: false
 ---
 
 
@@ -42,25 +42,32 @@ First you need to have a Google account if to access GEE plateform. You can sign
 Here are some information about the interface. 
 
 
-*Left Pannel
--Scripts tab for managing your programming scripts.
--Docs tab for accessing documentation of Earth Engine objects and methods, as well as a few specific to the Code Editor application.
--Assets tab for managing assets that you upload.
+<img src="../data/imgs2/fig01_interface.png" width="1214" />
 
-*Center Pannel
--Code editor where you write and edit code
 
-* Right Pannel
+**Left Pannel**
 
--Console tab for printing output.
--Inspector tab for querying map results.
--Tasks tab for managing long running tasks.
+- Scripts tab for managing your programming scripts.
+- Docs tab for accessing documentation of Earth Engine objects and methods, as well as a few specific to the Code Editor application.
+- Assets tab for managing assets that you upload.
 
-*Search Bar
--For finding datasets and places of interest
+**Center Pannel**
 
-*Map
--Interactive map where are show calculate layers over a typic Google map interface.
+- Code editor where you write and edit code
+
+**Right Pannel**
+
+- Console tab for printing output.
+- Inspector tab for querying map results.
+- Tasks tab for managing long running tasks.
+
+**Search Bar**
+
+- For finding datasets and places of interest
+
+**Map**
+
+- Interactive map where are show calculate layers over a typic Google map interface.
 
 
 # Step 2: Select a region of interest with geometry tools
@@ -71,6 +78,8 @@ Start by navigatiting to La Mauricie National Park. You can search "Shawinigan" 
 2. Click on "Exit" once the landmark is in place to avoid adding other points.
 3. Rename the landmark "pnm" in the script.
 
+<img src="../data/imgs2/fig02_pnm.png" width="744" />
+
 
 *An alternative* to geometry tools is to type this code to place a landmark. To complete the landmark you would have to click on the import option given by the code after typing it.
 
@@ -79,18 +88,21 @@ var pnm = /* color: #d63000 */ee.Geometry.Point([-72.97, 46.74])
 
 ```
 
-** Do not forget to save you script with the Save button. **
+**Do not forget to save you script with the Save button.**
 
 # Step 3: Load and display elevation layer
-## ** Note on parle de dataset ou layer?**
 
-To import a dataset, you have to import it from Earth Engine database. To do so, you can use the search bar to search for the dataset needed. Once it is imported, the dataset will not be displayed automatically. You will have to define visualisation parameter and boundaries around where you want to display the dataset, otherwise it will display the dataset for all its area.
+
+To import a dataset, you have to import it from Earth Engine database. To do so, you can use the search bar to search for the dataset needed. Once it is imported, the dataset will not be displayed automatically. You will have to define visualization parameters and boundaries around where you want to display the dataset, otherwise it will display the dataset for all its area.
 
 - To add elevation layer, search and import NASA SRTM Digital Elevation 30m in the search bar.
 - You can read available information about this dataset by clicking on the search result and look at the different tabs. You can press "import" to load the layer in you script.
 
+<img src="../data/imgs2/fig03_srtm.png" width="900" />
 
 - You can rename the layer "srtm".
+
+<img src="../data/imgs2/fig04_srtm2.png" width="628" />
 
 - Use the following code to print information about the layer in the console.
 
@@ -108,7 +120,9 @@ print(srtm);
 Map.addLayer(srtm);
 ```
 
-- The layer is not really precise for the region of interest because you did not define any visualition parameter. Try the following command that allow to give a range of value for the layer and a name to it.
+<img src="../data/imgs2/fig05_srtm3.png" width="900" />
+
+- The layer is not really precise for the region of interest because you did not define any visualization parameter. Try the following command that allow to give a range of value for the layer and a name to it.
 
 
 ```{.javascript .klippy}
@@ -124,7 +138,9 @@ Map.addLayer(srtm, {min: 0, max: 400},"Elevation");
 Map.addLayer(srtm, {min: 0, max: 400, palette: ['blue', 'yellow', 'red']},"Elevation with colour");
 ```
 
-- Elevation data is usefull but others tool can complement it like hillshape and slope of an area. The tools ee.Terrain.hillshade() and ee.Terrain.slope() can rapidly display those information.
+<img src="../data/imgs2/fig06_srtm4.png" width="595" />
+
+- Elevation data is useful but others tools can complement it like hillshade and slope of an area. The tools ee.Terrain.hillshade() and ee.Terrain.slope() can rapidly display those information.
 
 
 ```{.javascript .klippy}
@@ -133,20 +149,26 @@ var hillshade = ee.Terrain.hillshade(srtm);
 
 // Display hillshade map
 Map.addLayer(hillshade, {min: 150, max:255}, 'Hillshade');
+```
 
+
+```{.javascript .klippy}
 // Create a slope layer
 var slope = ee.Terrain.slope(srtm);
 
 //Display slope map
-Map.addLayer(slope, {min: 0, max: 30}, 'Slope')
+Map.addLayer(slope, {min: 0, max: 30}, 'Slope');
 ```
 
+<img src="../data/imgs2/fig07_srtm5.png" width="892" />
 
 # Step 4 Work with sattelite imagery for a region of interest
 
-Google Earth Engine dataset allow to work with tons of sattelite images. To focus on a region of interest you will have to apply some filter. Begin by importing images from Sentinel 2 satellite. It would have been possible to work with Landsat images also.
+Google Earth Engine dataset allow to work with tons of satellite images. To focus on a region of interest you will have to apply some filter. Begin by importing images from Sentinel 2 satellite. It would have been possible to work with Landsat images also.
 
 - Start by searching for "sentinel" in the search bar and select "Sentinel-2 MSI: Multispectral Instrument, Level-1c. Import this layer and rename it "sent2".
+
+<img src="../data/imgs2/fig08_sen.png" width="814" />
 
 -The following lines define some filter for the region of interest selected earlier in La Mauricie National Park between September and October 2020 and for the less cloudy image possible. You can also print the result of your query in the console with the function .size to get an idea of the number of images available depending of the filter you put.
 
@@ -163,7 +185,7 @@ print(pnm_s2.size(),"n. images");
                               
 ```
 
-Previous code allow to display many images at the same time. The next one will be prefered to select the best images according to filter applied. 
+Previous code allow to display many images at the same time. The next one will be preferred to select the best images according to filter applied. 
 
 
 ```{.javascript .klippy}
@@ -190,10 +212,11 @@ print(pnm_i2, "2nd best image");
       
 ```
 
-- In order to display the image created previously, use the Map.addLayer tool and define visualisation parameter for the red,blue and green bands. 
+- In order to display the image created previously, use the Map.addLayer tool and define visualization parameter for the red,blue and green bands. 
 
 
 ```{.r .klippy}
+// Define visualization parameters
 var rgb_colour = {
         bands: ["B4", "B3", "B2"],
         min: 0,
@@ -209,11 +232,19 @@ Map.addLayer(pnm_i,rgb_colour,"Sentinel-2 Image");
  
 - First go in the assets tabs --> New --> Shapefiles
 
+<img src="../data/imgs2/fig09_shp.png" width="766" />
+
 - Select the files that end by .shp; .dbf; .shx; .prj associated to the desire shapefile from the emplacement it is located on your computer. --> Type the name that you want to give to the shapefile ex. "PNM_poly". --> Upload
+
+<img src="../data/imgs2/fig10_shp2.png" width="862" />
 
 - To validate that importation work, take a look to the task manager in the right pannel. Once the file is upload, the dowload bar should be full. When you update the asset tab, you should see your shapefile layer imported in the assets tabs in the left pannel. 
 
+<img src="../data/imgs2/fig11_shp3.png" width="900" />
+
 - To import the shapefile layer in your script you can click on the desire layer in the assets tab. --> Import --> Rename the layer "shape_pnm" in the script.
+
+<img src="../data/imgs2/fig12_shp4.png" width="900" />
 
 - This line could have work too. It define a variable from your shapefile layer. 
 
@@ -228,12 +259,14 @@ var pnm_poly = ee.FeatureCollection('users/XXX/PNM_poly');
 
 ```{.javascript .klippy}
 // Display satellite image for the shapefile area of the National Park
-Map.addLayer(pnm_i.clip(shape_pnm),couleur_rgb,"Satellite Image cropped");
+Map.addLayer(pnm_i.clip(shape_pnm),rgb_colour,"Satellite Image cropped");
 ```
+
+<img src="../data/imgs2/fig13_shp5.png" width="553" />
 
 # Step 6: Calculate a spectral index (ex: NDVI)
 
-Another exercice with Google Earth Engine is to create a new layer which contain a calculated band like NDVI index (Normalized difference vegetation index).
+Another exercise with Google Earth Engine is to create a new layer which contain a calculated band like NDVI index (Normalized difference vegetation index).
 
 This type of index is often use to highlight some element of an existing image. In the case of NDVI, it is a ratio between reflectance of red and near infrared bands that allow to highlight presence of vegetation in an image. The formula to calculate NDVI is show here. 
 
@@ -279,7 +312,11 @@ This exercice is about image classification with GEE. The following code make a 
 
 - First manipulation is to build the training dataset. Use the geometry tool to create polygons. Be careful to take small area to avoid script error when you will run the code. Helped by the geometry tool, draw a polygon in a forested area and rename it forest in your script. Repeat this step for polygons in agricultural, water and urban landscape. Rename those polygons respectively "agriculture", "water" and "city".
 
-- After, you need to add a label to each polygon like you would create an attribute column in an attribute table of a shapefile. Those label will be useful when you will merge all polygons together. To add a label open polygons propriety --> select "FeatureCollection" --> Add property --> Name it "landcover" --> Give it a value of 0 (number zero) --> Ok. Do this sept for the others polygons with value of 1-2 and 3 respectively. After this sept, each polygon should be a FeatureCollection object.
+<img src="../data/imgs2/fig14_training.png" width="1044" />
+
+- After, you need to add a label to each polygon like you would create an attribute column in an attribute table of a shapefile. Those label will be useful when you will merge all polygons together. To add a label open polygons propriety --> select "FeatureCollection" --> Add property --> Name it "landcover" --> Give it a value of 0 (number zero) --> Ok. Do this step for the others polygons with value of 1-2 and 3 respectively. After this step, each polygon should be a FeatureCollection object.
+
+<img src="../data/imgs2/fig15_training2.png" width="467" />
 
 - Use the following code to merge polygons together and print it in the console.
 
@@ -291,7 +328,9 @@ var classNames = forest.merge(agriculture).merge(water).merge(city);
 print(classNames);
 ```
 
-- Now you can use classNames layer to create the training data. This traning data will associate different band values from an image to the polygon you drawn. Here we use bands 2,3,4 and 8 (RGB and NIR bands that have a 10m resolution).
+<img src="../data/imgs2/fig16_training3.png" width="653" />
+
+- Now you can use classNames layer to create the training data. This training data will associate different band values from an image to the polygon you drawn. Here we use bands 2,3,4 and 8 (RGB and NIR bands that have a 10m resolution).
 
 
 ```{.javascript .klippy}
@@ -324,6 +363,8 @@ var classification = pnm_i.select(bands).classify(classifier);
 Map.addLayer(classification, {min: 0, max: 3, palette: ['green', 'yellow','blue','red']}, 'classification');
 ```
 
+<img src="../data/imgs2/fig17_classif.png" width="538" />
+
 - This first classification is not perfect. For example one mistake from the classification is that there is too much agricultural landscape compare to reality. To make the classification more accurate, you could add NDVI data that you created earlier. To do so, you will need to use the object "ndvi1" created earlier that contain ndvi index and satellite image bands.
 
 
@@ -353,21 +394,25 @@ Map.addLayer(classification2, {min: 0, max: 3, palette: ['green', 'yellow','blue
 
 ```
 
-- The final image could look like that but it is still not perfect.
+- The final image could look like that, but it is still not perfect.
+
+<img src="../data/imgs2/fig18_classif2.png" width="869" />
 
 # Step 8: Export raster layer to Google Drive
 
-It is possible to export the layer you created in GEE via Google Drive. From there you can continue to modify those layer in GIS software for example. In this step, you will export only a small region of the classification because the entire image would be too heavy to export.
+It is possible to export the layer you created in GEE via Google Drive. From there you can continue to modify those layers in a GIS software for example. In this step, you will export only a small region of the classification because the entire image would be too heavy to export.
 
 - Start by adding a landmark that you will call "zone".
 
-- This code create a buffer zone with a radius of 1500 meter around the landmark.
+<img src="../data/imgs2/fig19_export.png" width="666" />
+
+- This code create a buffer zone with a radius of 1500 meters around the landmark.
 
 
 ```{.javascript .klippy}
 // Create an export zone with a buffer
-var zone=exporter.buffer(1500);
-Map.addLayer(zone,couleur_rgb,"Export zone");
+var zone=zone.buffer(1500);
+Map.addLayer(zone,rgb_colour,"Export zone");
 ```
 
 - You are now ready to export the classification layer locate in the zone you just define in Google Drive.
@@ -377,14 +422,18 @@ Map.addLayer(zone,couleur_rgb,"Export zone");
 //Export raster
 Export.image.toDrive({
   image: classification,
-  description: 'image_classifier',
+  description: 'image_classified',
   scale: 10,
   region: zone
 });
 
 ```
 
-- To finish exportation, click "run" in the task tab and ajust export parameter as you desire. --> Run. In the following picture, everything is already fine so you can press "Run" right away without changing anything.
+- To finish exportation, click "run" in the task tab and adjust export parameter as you desire. --> Run. In the following picture, everything is already fine so you can press "Run" right away without changing anything.
+
+<img src="../data/imgs2/fig20_export2.png" width="854" />
+
+<img src="../data/imgs2/fig21_export3.png" width="336" />
 
 # Step 9: Draw graph with GEE
 
@@ -436,5 +485,4 @@ print(Chart2);
 
 - Once the graph is done, you can click on it in the console and from there it is possible to export those data in different format. (Ex. .CSV)
 
-** End of the workshop**
-)
+**End of the workshop**
